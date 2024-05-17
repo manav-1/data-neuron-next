@@ -1,95 +1,136 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import ReactGridLayout, {
+  Responsive,
+  WidthProvider,
+  type Layout,
+} from "react-grid-layout";
+import InputComponent from "@/components/counter";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 import styles from "./page.module.css";
 
-export default function Home() {
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const defaultLayout = {
+  w: 6,
+  h: 25,
+  minW: 1,
+  minH: 1,
+  isDraggable: false,
+  isResizable: true,
+  resizeHandles: [
+    "s",
+    "e",
+    "w",
+    "n",
+    "ne",
+    "nw",
+    "sw",
+    "se",
+  ] as ReactGridLayout.ReactGridLayoutProps["resizeHandles"],
+  isBounded: true,
+};
+
+const initialLayout = [
+  { ...defaultLayout, i: "1", x: 0, y: 0 },
+  { ...defaultLayout, i: "2", x: 6, y: 0 },
+  { ...defaultLayout, i: "3", x: 0, y: 25, w: 12 },
+];
+
+export default function Index() {
+  const [layouts, setLayouts] = useState<Record<string, Layout[]>>({
+    lg: initialLayout,
+    md: initialLayout,
+    sm: initialLayout,
+    xs: initialLayout,
+    xxs: initialLayout,
+  });
+  const maxCols = 12;
+  const maxRows = 50;
+  const horizontalItems = ["1", "2"];
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div>
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={layouts}
+        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+        cols={{
+          lg: maxCols,
+          md: maxCols,
+          sm: maxCols,
+          xs: maxCols,
+          xxs: maxCols,
+        }}
+        rowHeight={10}
+        // isBounded={true}
+        style={{ height: "50vh", width: "50vh" }}
+        maxRows={maxRows}
+        onResizeStop={(newLayout, oldItem, newItem) => {
+          console.log({ newLayout });
+
+          const heightForHorizontalItems =
+            newItem.i === "3" ? maxRows - newItem.h : newItem.h;
+          const heightForVerticalItems = maxRows - heightForHorizontalItems;
+
+          console.log({
+            newItem,
+            heightForHorizontalItems,
+            heightForVerticalItems,
+          });
+
+          const updatedLayout = newLayout.map((item) => {
+            if (horizontalItems.includes(newItem.i)) {
+              if (horizontalItems.includes(item.i)) {
+                item.h = heightForHorizontalItems;
+                item.y = 0;
+              }
+              const otherItem = newLayout.find(
+                (el) => el.i !== newItem.i && horizontalItems.includes(el.i)
+              );
+              if (otherItem) {
+                otherItem.w = maxCols - newItem.w;
+                if ((newItem.i === "2" || newItem.i === "1") && item.i === "2")
+                  item.x = otherItem.w;
+              }
+              if (item.i === "3") item.h = heightForVerticalItems;
+            }
+            if (newItem.i === "3") {
+              if (item.i === "3") {
+                item.h = heightForVerticalItems;
+                item.y = heightForHorizontalItems;
+              }
+              if (horizontalItems.includes(item.i)) {
+                item.h = heightForHorizontalItems;
+                item.y = 0;
+              }
+            }
+
+            console.log(item.i, { item });
+            return item;
+          });
+          console.log({ updatedLayout });
+
+          setLayouts({
+            lg: updatedLayout,
+            md: updatedLayout,
+            sm: updatedLayout,
+            xs: updatedLayout,
+            xxs: updatedLayout,
+          });
+        }}
+      >
+        <div key="1" className={styles.resizableDiv}>
+          <InputComponent id="1" />
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+        <div key="2" className={styles.resizableDiv}>
+          <InputComponent id="2" />
+        </div>
+        <div key="3" className={styles.resizableDiv}>
+          <InputComponent id="3" />
+        </div>
+      </ResponsiveGridLayout>
+    </div>
   );
 }
