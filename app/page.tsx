@@ -63,23 +63,14 @@ export default function Index() {
           xs: maxCols,
           xxs: maxCols,
         }}
+        compactType={"horizontal"}
         rowHeight={10}
-        // isBounded={true}
-        style={{ height: "50vh", width: "50vh" }}
+        isBounded={true}
         maxRows={maxRows}
         onResizeStop={(newLayout, oldItem, newItem) => {
-          console.log({ newLayout });
-
           const heightForHorizontalItems =
             newItem.i === "3" ? maxRows - newItem.h : newItem.h;
           const heightForVerticalItems = maxRows - heightForHorizontalItems;
-
-          console.log({
-            newItem,
-            heightForHorizontalItems,
-            heightForVerticalItems,
-          });
-
           const updatedLayout = newLayout.map((item) => {
             if (horizontalItems.includes(newItem.i)) {
               if (horizontalItems.includes(item.i)) {
@@ -94,7 +85,10 @@ export default function Index() {
                 if ((newItem.i === "2" || newItem.i === "1") && item.i === "2")
                   item.x = otherItem.w;
               }
-              if (item.i === "3") item.h = heightForVerticalItems;
+              if (item.i === "3") {
+                item.y = heightForHorizontalItems;
+                item.h = heightForVerticalItems;
+              }
             }
             if (newItem.i === "3") {
               if (item.i === "3") {
@@ -106,11 +100,8 @@ export default function Index() {
                 item.y = 0;
               }
             }
-
-            console.log(item.i, { item });
             return item;
           });
-          console.log({ updatedLayout });
 
           setLayouts({
             lg: updatedLayout,
