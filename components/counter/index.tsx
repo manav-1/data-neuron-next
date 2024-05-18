@@ -6,13 +6,28 @@ type InputComponentProps = {
   id: string;
 };
 
+/**
+ * InputComponent is a React component that allows users to add and update data,
+ * and fetch counts related to the data.
+ *
+ * @component
+ * @example
+ * return (
+ *   <InputComponent id="1" />
+ * )
+ */
 export default function InputComponent({ id }: InputComponentProps) {
+  // State to manage the input value
   const [inputValue, setInputValue] = useState("");
+  // State to manage the counts for add and update operations
   const [count, setCount] = useState<{
     addCount: 0;
     updateCount: 0;
   } | null>(null);
 
+  /**
+   * Handle the add operation by sending a POST request with the input data.
+   */
   const handleAdd = () => {
     try {
       client.post(`/`, { data: inputValue, instanceId: id });
@@ -21,6 +36,9 @@ export default function InputComponent({ id }: InputComponentProps) {
     }
   };
 
+  /**
+   * Handle the update operation by sending a PUT request with the input data.
+   */
   const handleUpdate = () => {
     try {
       client.put(`/${id}`, { data: inputValue, instanceId: id });
@@ -29,6 +47,9 @@ export default function InputComponent({ id }: InputComponentProps) {
     }
   };
 
+  /**
+   * Fetch the counts for add and update operations from the server.
+   */
   const getCount = async () => {
     try {
       const { data: count } = await client.get(`${id}/count`);

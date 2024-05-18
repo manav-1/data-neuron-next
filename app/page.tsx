@@ -10,8 +10,10 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import styles from "./page.module.css";
 
+// Adding WidthProvider to ResponsiveGridLayout to manage layout width
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
+// Default layout configuration for each grid item
 const defaultLayout = {
   w: 6,
   h: 25,
@@ -32,6 +34,7 @@ const defaultLayout = {
   isBounded: true,
 };
 
+// Initial layout settings for grid items
 const initialLayout = [
   { ...defaultLayout, i: "1", x: 0, y: 0 },
   { ...defaultLayout, i: "2", x: 6, y: 0 },
@@ -68,6 +71,7 @@ export default function Index() {
         isBounded={true}
         maxRows={maxRows}
         onResizeStop={(newLayout, oldItem, newItem) => {
+          // Adjust layout heights for horizontal and vertical items after resizing
           const heightForHorizontalItems =
             newItem.i === "3" ? maxRows - newItem.h : newItem.h;
           const heightForVerticalItems = maxRows - heightForHorizontalItems;
@@ -102,7 +106,7 @@ export default function Index() {
             }
             return item;
           });
-
+          // Update layouts for all breakpoints
           setLayouts({
             lg: updatedLayout,
             md: updatedLayout,
