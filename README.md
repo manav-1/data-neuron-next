@@ -1,3 +1,5 @@
+The Project is hosted using vercel at this [`link`](https://data-neuron-next.vercel.app/)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
