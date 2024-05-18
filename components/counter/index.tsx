@@ -30,6 +30,7 @@ export default function InputComponent({ id }: InputComponentProps) {
    */
   const handleAdd = () => {
     try {
+      if (!inputValue) return;
       client.post(`/`, { data: inputValue, instanceId: id });
     } catch (err) {
       console.log(err);
@@ -41,6 +42,7 @@ export default function InputComponent({ id }: InputComponentProps) {
    */
   const handleUpdate = () => {
     try {
+      if (!inputValue) return;
       client.put(`/${id}`, { data: inputValue, instanceId: id });
     } catch (err) {
       console.log(err);
